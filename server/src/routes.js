@@ -3,7 +3,13 @@ const initController = require('./app/controllers/initController')
 
 const routes = new Router()
 
-// routes initController
-routes.route('/index').get(initController.index)
+routes.route('/books')
+  .get(initController.getAll)
+  .post(initController.create)
+
+routes.route('/books/:id')
+  .get(initController.getOne)
+  .put(initController.update)
+  .delete(initController.delete)
 
 module.exports = routes
