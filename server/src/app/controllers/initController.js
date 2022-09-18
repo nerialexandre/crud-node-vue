@@ -2,18 +2,22 @@ const graphDBConnect = require('../../config/database')
 const formatLib = require('../lib/formatResponse')
 const checkBook = require('../lib/checkBook')
 const { validationResult } = require('express-validator')
+const uuid = require('uuid');
 
 module.exports = {
 
   async getAll (req, res)
   {
     const { page = 1, limit = 100 } = req.query
-
     const query = `MATCH (n:Books) RETURN n SKIP ${limit * (page - 1)} LIMIT ${limit}`
     const resultObj = await graphDBConnect.executeCypherQuery(query)
-    const result = formatLib.formatResponse(resultObj)
+    const result = formatLib.formatBookResponse(resultObj)
+
+    const totalBooks = await graphDBConnect.executeCypherQuery(`MATCH (n:Books) RETURN COUNT(n)`)
+    const countTotalBooks = totalBooks.records[0]._fields[0]
 
     res.send({
+      pagesTotal: Math.ceil(countTotalBooks / limit),
       message: 'All Books',
       result
     })
@@ -21,11 +25,16 @@ module.exports = {
 
   async getOne (req, res)
   {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params
     const query = 'MATCH (n:Books {id: $id}) RETURN n LIMIT 1'
-    const params = { id: parseInt(id) }
+    const params = { id }
     const resultObj = await graphDBConnect.executeCypherQuery(query, params)
-    const result = formatLib.formatResponse(resultObj)
+    const result = formatLib.formatBookResponse(resultObj)
 
     res.send({
       message: 'Book found',
@@ -42,7 +51,6 @@ module.exports = {
       }
 
       const {
-        id,
         title,
         author,
         pages = null,
@@ -60,7 +68,7 @@ module.exports = {
 
       const query = 'CREATE (n:Books {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany}) RETURN n'
       const params = {
-        id: parseInt(id),
+        id: uuid.v4(),
         title,
         author,
         pages,
@@ -69,10 +77,10 @@ module.exports = {
       }
 
       const resultObj = await graphDBConnect.executeCypherQuery(query, params)
-      const result = formatLib.formatResponse(resultObj)
+      const result = formatLib.formatBookResponse(resultObj)
       res.status(201).send({
         message: 'Book created successfully',
-        result
+        result: result[0]
       })
 
     } catch (error) {
@@ -83,6 +91,11 @@ module.exports = {
 
   async update (req, res)
   {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const {
       title,
       author,
@@ -93,7 +106,7 @@ module.exports = {
 
     const { id } = req.params
 
-    const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: ${id}}) RETURN n LIMIT 1`)
+    const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: '${id}'}) RETURN n LIMIT 1`)
 
     if (checkBookExists.records.length <= 0) {
       return res.status(400).send({
@@ -108,10 +121,10 @@ module.exports = {
       })
     }
 
-    const query = 'MATCH (b:Books {id: $id}) SET b = {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany} RETURN b';
+    const query = `MATCH (b:Books {id: '${id}'}) SET b = {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany} RETURN b`;
 
     const params = {
-      id: parseInt(id),
+      id,
       title,
       author,
       pages,
@@ -120,19 +133,24 @@ module.exports = {
     };
 
     const resultObj = await graphDBConnect.executeCypherQuery(query, params);
-    const result = formatLib.formatResponse(resultObj);
+    const result = formatLib.formatBookResponse(resultObj);
 
     res.send({
       message: 'Book update successfully',
-      data: result
+      result: result[0]
     })
   },
 
   async delete (req, res)
   {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { id } = req.params;
 
-    const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: ${id}}) RETURN n LIMIT 1`)
+    const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: '${id}'}) RETURN n LIMIT 1`)
 
     if (checkBookExists.records.length <= 0) {
       return res.status(400).send({
@@ -140,10 +158,8 @@ module.exports = {
       })
     }
 
-    const query = 'MATCH (b:Users {id: $id}) DELETE b';
-    const params = { id: parseInt(id) };
+    await graphDBConnect.executeCypherQuery(`MATCH (b:Books {id: '${id}'}) DELETE b`)
 
-    await graphDBConnect.executeCypherQuery(query, params);
     res.status(204).end();
   }
 }

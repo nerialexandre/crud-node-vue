@@ -4,10 +4,10 @@
     class="ma-10"
   >
     <books-add-update-modal
-      v-if="state.isAddOrUpdateBookActive"
-      :is-add-or-update-book-active.sync="state.isAddOrUpdateBookActive"
-      :type-form.sync="state.typeForm"
-      :input-data="state.inpuData"
+      v-if="isAddOrUpdateBookActive"
+      :is-add-or-update-book-active.sync="isAddOrUpdateBookActive"
+      :type-form.sync="typeForm"
+      :input-data="bookInputData"
       @get-books="getBooks()"
     />
 
@@ -49,7 +49,7 @@
         </thead>
         <tbody>
 
-          <tr v-if="state.books.length <= 0">
+          <tr v-if="books.length <= 0">
             <td
               class="text-center"
               colspan="12"
@@ -59,14 +59,14 @@
 
           </tr>
           <tr
-            v-for="item in state.books"
+            v-for="item in books"
             :key="item.id"
           >
             <td>{{ item.title }}</td>
             <td>{{ item.author }}</td>
             <td>{{ item.publishingCompany }}</td>
             <td>{{ item.pages }}</td>
-            <td>{{ item.releaseDate }}</td>
+            <td>{{ item.releaseDate | dateFormat }}</td>
             <td class="text-center">
               <v-btn
                 class="ma-2"
@@ -113,8 +113,8 @@
       >
         <v-container class="max-width">
           <v-select
-            v-model="state.perPageSelect"
-            :items="state.perPageOptions"
+            v-model="perPageSelect"
+            :items="perPageOptions"
             item-text="label"
             item-value="value"
             label="Select"
@@ -133,10 +133,10 @@
       >
         <v-container class="d-flex justify-lg-end justify-sm-center">
           <v-pagination
-            v-model="state.page"
+            v-model="page"
             class="my-4"
             :total-visible="7"
-            :length="15"
+            :length="pagesTotal"
           ></v-pagination>
         </v-container>
       </v-col>
@@ -147,11 +147,18 @@
 </template>
 
 <script>
-import { onMounted, reactive, watch } from 'vue'
+import { onMounted, reactive, watch, toRefs } from 'vue'
 import BooksService from '@/services/BooksService'
 import BooksAddUpdateModal from './BooksAddUpdateModal.vue'
+import moment from 'moment'
 
 export default {
+  filters: {
+    dateFormat (value) {
+      if (!value) return ''
+      return moment(value).format('DD/MM/YYYY')
+    }
+  },
   components: {
     BooksAddUpdateModal
   },
@@ -165,8 +172,9 @@ export default {
       isAddOrUpdateBookActive: false,
       typeForm: 'Cadastrar',
       page: 1,
+      pagesTotal: 1,
       limit: 10,
-      inpuData: {
+      bookInputData: {
         id: '',
         title: '',
         author: '',
@@ -184,7 +192,7 @@ export default {
 
     function openAddForm (params) {
       state.typeForm = 'Cadastrar'
-      state.inpuData = {
+      state.bookInputData = {
         id: '',
         title: '',
         author: '',
@@ -197,7 +205,7 @@ export default {
 
     function openUpdateForm (id) {
       BooksService.getOne(id).then((res) => {
-        state.inpuData = res.data.result
+        state.bookInputData = res.data.result
         state.typeForm = 'Editar'
         state.isAddOrUpdateBookActive = !state.isAddOrUpdateBookActive
       })
@@ -206,6 +214,7 @@ export default {
     function getBooks (page = 1, limit = 10) {
       BooksService.getAll({ page, limit }).then((res) => {
         state.books = res.data.result
+        state.pagesTotal = res.data.pagesTotal
       })
     }
 
@@ -228,20 +237,20 @@ export default {
 
     watch(
       () => state.perPageSelect,
-      (perPageSelect, prevPerPageSelect) => {
+      (perPageSelect) => {
         getBooks(state.page, perPageSelect.value)
       }
     )
 
     watch(
       () => state.page,
-      (page, prevPage) => {
+      (page) => {
         getBooks(page, state.perPageSelect.value)
       }
     )
 
     return {
-      state,
+      ...toRefs(state),
       getBooks,
       openUpdateForm,
       deleteBook,

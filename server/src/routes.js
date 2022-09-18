@@ -21,7 +21,7 @@ routes.route('/books')
       body('releaseDate')
         .optional(),
       body('pages')
-        .optional()
+        .optional({ checkFalsy: true })
         .isInt({ min: 1 })
         .withMessage(
           'O número da página deve ser um inteiro maior ou igual a 1'
@@ -60,7 +60,7 @@ routes.route('/books/:id')
       body('releaseDate')
         .optional(),
       body('pages')
-        .optional()
+        .optional({ checkFalsy: true })
         .isInt({ min: 1 })
         .withMessage(
           'O número da página deve ser um inteiro maior ou igual a 1'

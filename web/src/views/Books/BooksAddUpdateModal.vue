@@ -1,13 +1,13 @@
 <template>
 
   <v-dialog
-    v-model="state.dialog"
+    v-model="dialog"
     persistent
     max-width="700"
   >
     <v-card class="pa-4">
       <v-card-title>
-        <span class="text-h5">{{state.typeForm}} Livro</span>
+        <span class="text-h5">{{typeForm}} Livro</span>
       </v-card-title>
       <v-card-text>
         <v-form ref="myForm">
@@ -16,7 +16,7 @@
               <v-col cols="12">
                 <v-text-field
                   label="Titulo do livro*"
-                  v-model="state.inputBook.title"
+                  v-model="inputBook.title"
                   :rules="rules.titleRules"
                   required
                 ></v-text-field>
@@ -24,7 +24,7 @@
               <v-col cols="12">
                 <v-text-field
                   label="Nome do Autor*"
-                  v-model="state.inputBook.author"
+                  v-model="inputBook.author"
                   :rules="rules.authorRules"
                   required
                 ></v-text-field>
@@ -35,8 +35,9 @@
                 md="6"
               >
                 <v-text-field
+                type="number"
                   label="Numero de páginas"
-                  v-model="state.inputBook.pages"
+                  v-model="inputBook.pages"
                   :rules="rules.pageRules"
                 ></v-text-field>
               </v-col>
@@ -47,13 +48,14 @@
               >
                 <v-text-field
                   label="Data do Lançamento"
-                  v-model="state.inputBook.releaseDate"
+                  type="date"
+                  v-model="inputBook.releaseDate"
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field
                   label="Editora"
-                  v-model="state.inputBook.publishingCompany"
+                  v-model="inputBook.publishingCompany"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -62,13 +64,13 @@
 
         <div>
           <v-alert
-            v-model="state.hasErrorMessage"
+            v-model="hasErrorMessage"
             close-text="Close Alert"
             color="red"
             dark
             dismissible
           >
-            {{state.errorMessage}}
+            {{errorMessage}}
           </v-alert>
         </div>
       </v-card-text>
@@ -77,7 +79,7 @@
         <v-btn
           color="red darken-1"
           text
-          @click="state.dialog = !state.dialog"
+          @click="dialog = !dialog"
         >
           Sair
         </v-btn>
@@ -96,7 +98,7 @@
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, toRefs } from 'vue'
 import { requiredField, validatorPositiveZero } from '@/utils/validators'
 import BooksService from '@/services/BooksService'
 
@@ -120,9 +122,7 @@ export default {
       authorRules: [(v) => requiredField(v) || 'Nome do autor é obrigatório'],
       titleRules: [(v) => requiredField(v) || 'Titulo do livro é obrigatório'],
       pageRules: [
-        (v) =>
-          validatorPositiveZero(v) ||
-          'Número de páginas deve ser maior que zero'
+        (v) => validatorPositiveZero(v) || 'Número de páginas deve ser maior que zero'
       ]
     }
 
@@ -136,6 +136,7 @@ export default {
     })
 
     function submit (id = null) {
+      console.log(state.inputBook)
       state.formValidate = myForm.value.validate()
       if (state.formValidate) {
         if (props.typeForm === 'Cadastrar') {
@@ -180,7 +181,7 @@ export default {
     )
 
     return {
-      state,
+      ...toRefs(state),
       submit,
       rules,
       myForm

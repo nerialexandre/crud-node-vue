@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const routes = require('./routes')
 const expressLogger = require('./config/winston/expressWinston')()
 
@@ -10,9 +11,10 @@ app.use(express.urlencoded({ extended: true }))
 // logs
 app.use(expressLogger)
 
+app.use(cors())
 app.use(routes)
 
-app.listen(5000, () => {
+app.listen(3000, () => {
   console.log('🚀️ Backend started! - 5000')
 })
 
