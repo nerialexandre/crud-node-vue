@@ -1,12 +1,15 @@
 const graphDBConnect = require('../../config/database')
 const formatLib = require('../lib/formatResponse')
 const checkBook = require('../lib/checkBook')
+const { validationResult } = require('express-validator')
 
 module.exports = {
 
   async getAll (req, res)
   {
-    const query = 'MATCH (n:Books) RETURN n LIMIT 100'
+    const { page = 1, limit = 100 } = req.query
+
+    const query = `MATCH (n:Books) RETURN n SKIP ${limit * (page - 1)} LIMIT ${limit}`
     const resultObj = await graphDBConnect.executeCypherQuery(query)
     const result = formatLib.formatResponse(resultObj)
 
@@ -30,41 +33,52 @@ module.exports = {
     })
   },
 
-  async create (req, res)
+  async create (req, res, next)
   {
-    const {
-      id,
-      title,
-      author,
-      pages,
-      releaseDate,
-      publishingCompany,
-    } = req.body
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const checkBookExistsWithTitle = await checkBook.checkBookExistsWithTitle(title)
+      const {
+        id,
+        title,
+        author,
+        pages = null,
+        releaseDate = null,
+        publishingCompany = null,
+      } = req.body
 
-    if (checkBookExistsWithTitle) {
-      return res.status(400).send({
-        message: 'Já existe um livro com esse titulo',
+      const checkBookExistsWithTitle = await checkBook.checkBookExistsWithTitle(title)
+
+      if (checkBookExistsWithTitle) {
+        return res.status(400).send({
+          message: 'Já existe um livro com esse titulo',
+        })
+      }
+
+      const query = 'CREATE (n:Books {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany}) RETURN n'
+      const params = {
+        id: parseInt(id),
+        title,
+        author,
+        pages,
+        releaseDate,
+        publishingCompany,
+      }
+
+      const resultObj = await graphDBConnect.executeCypherQuery(query, params)
+      const result = formatLib.formatResponse(resultObj)
+      res.status(201).send({
+        message: 'Book created successfully',
+        result
       })
+
+    } catch (error) {
+      next(error)
     }
 
-    const query = 'CREATE (n:Books {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany}) RETURN n'
-    const params = {
-      id: parseInt(id),
-      title,
-      author,
-      pages,
-      releaseDate,
-      publishingCompany,
-    }
-
-    const resultObj = await graphDBConnect.executeCypherQuery(query, params)
-    const result = formatLib.formatResponse(resultObj)
-    res.status(201).send({
-      message: 'Book created successfully',
-      result
-    })
   },
 
   async update (req, res)
@@ -72,9 +86,9 @@ module.exports = {
     const {
       title,
       author,
-      pages,
-      releaseDate,
-      publishingCompany,
+      pages = null,
+      releaseDate = null,
+      publishingCompany = null,
     } = req.body
 
     const { id } = req.params

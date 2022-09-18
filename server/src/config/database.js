@@ -11,18 +11,14 @@ const driver = neo4j.driver(uri, neo4j.auth.basic(user, password), {
   disableLosslessIntegers: true
 })
 
-async function executeCypherQuery (statement, params = {}) {
-  try {
-    const session = driver.session({
-      database: 'neo4j'
-    })
-
-    const result = await session.run(statement, params)
-    session.close()
-    return result
-  } catch (error) {
-    console.log('erro')
-  }
+async function executeCypherQuery (statement, params = {})
+{
+  const session = driver.session({
+    database: 'neo4j'
+  })
+  const result = await session.run(statement, params)
+  session.close()
+  return result
 }
 
 module.exports = { executeCypherQuery }
