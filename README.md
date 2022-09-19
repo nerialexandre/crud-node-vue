@@ -10,7 +10,7 @@ backEnd: nodejs na versão 10.x com webservice restify/express e comunição res
 frontEnd: VueJs com Vue UI Library Vuetify
 banco de dados: neo4j
 
-## Maiores desafios
+## Desafios
 
 O maior desafio se deu em usar o Neo4j, mas isso se deve apenas por nao conhecer a ferramenta e nao esta familiarizado com o conceito de banco de dados orientado a grafos!
 
@@ -20,7 +20,7 @@ Não consegui atender o requisito de utilizacao do node.js na versão 10.x pois 
 ![screenshot](https://github.com/nerialexandre/crud-node-vue/blob/develop/web/src/assets/erro_node_10.jpg?raw=true)
 
 
-## Maiores facilidades
+## Facilidades
 
 ##### Desenvolvimento
 Por já está familiarizado com a liguagem e com o desenvolvimento de API restfull o desenvolvimento se deu de forma bem tranquila podendo aproveitar parte do tempo para realizar testes manuais e dedicar algum tempo as validacoes tanto no backend como no frontend
