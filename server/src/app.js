@@ -14,8 +14,8 @@ app.use(expressLogger)
 app.use(cors())
 app.use(routes)
 
-app.listen(5000, () => {
-  console.log('🚀️ Backend started! - 5000')
+app.listen(3000, () => {
+  console.log('🚀️ Backend started! - 3000')
 })
 
 module.exports = app
