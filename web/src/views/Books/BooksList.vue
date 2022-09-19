@@ -11,15 +11,15 @@
       @get-books="getBooks()"
     />
 
-    <div class="d-block d-flex justify-space-between align-center px-3">
-      <v-card-title>
+    <div class="d-flex justify-space-between align-center px-3">
+      <v-card-title class="text-center">
         Lista de Livros
       </v-card-title>
       <v-btn
         color="primary"
         dark
         @click="openAddForm"
-      >Adicionar Novo Livro
+      >Novo Livro
       </v-btn>
     </div>
 
@@ -28,7 +28,7 @@
         <thead>
           <tr>
             <th class="text-left">
-              Titulo
+              Título
             </th>
             <th class="text-left">
               Autor
@@ -229,7 +229,7 @@ export default {
       }).then((res) => {
         if (res.isConfirmed) {
           BooksService.delete(id).then((res) => {
-            state.books = state.books.filter((book) => book.id !== id)
+            getBooks()
           })
         }
       })

@@ -15,7 +15,7 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  label="Titulo do livro*"
+                  label="Título do livro*"
                   v-model="inputBook.title"
                   :rules="rules.titleRules"
                   required
@@ -120,7 +120,7 @@ export default {
     const myForm = ref(null)
     const rules = {
       authorRules: [(v) => requiredField(v) || 'Nome do autor é obrigatório'],
-      titleRules: [(v) => requiredField(v) || 'Titulo do livro é obrigatório'],
+      titleRules: [(v) => requiredField(v) || 'Título do livro é obrigatório'],
       pageRules: [
         (v) => validatorPositiveZero(v) || 'Número de páginas deve ser maior que zero'
       ]

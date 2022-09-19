@@ -46,8 +46,8 @@ This software uses the following open source packages:
 ## Setup
 
 ```
-$ cd server
-$ npm install
+cd server
+npm install
 ```
 ##### Configurar credenciais banco Neo4j
 acesse o arquivo [/src/config/config.js](https://github.com/nerialexandre/crud-node-vue/blob/develop/server/src/config/config.js) e informe as credencias do banco
@@ -83,8 +83,8 @@ This software uses the following open source packages:
 ## Setup
 
 ```
-$ cd web
-$ npm install
+cd web
+npm install
 ```
 ##### Necessario Executar o backend primeiramente
 
