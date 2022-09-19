@@ -20,10 +20,13 @@ routes.route('/books')
         .isString()
         .withMessage('Nome do autor deve ser string'),
       body('releaseDate')
-        .optional()
+        .optional({ checkFalsy: true })
         .custom(value => {
           return customValidators.isDateOnly(value)
-        }),
+        })
+        .withMessage(
+          'O formato da data é invalido'
+        ),
       body('pages')
         .optional({ checkFalsy: true })
         .isInt({ min: 1 })
