@@ -1,3 +1,5 @@
+![screenshot](https://raw.githubusercontent.com/nerialexandre/crud-node-vue/develop/web/src/assets/livros10.jpg)
+
 ## Desafio NODE.js + VUE2
 
 Desafio: Criar sistema CRUD (inclusão, leitura, atualização, deleção) com lógica funcional,  como por exemplo: sistema de ponto, sistema de checagem, sistema de monitoramento.
@@ -15,6 +17,7 @@ O maior desafio se deu em usar o Neo4j, mas isso se deve apenas por nao conhecer
 ##### Impedimento encontrado
 
 Não consegui atender o requisito de utilizacao do node.js na versão 10.x pois o vue-service atualmente esta trabalhando com a versao 12.x ou maior, e por ter um prazo limitado optei por usar a versao LTS seguinte mais proxima, o node.js 12.x
+![screenshot](https://github.com/nerialexandre/crud-node-vue/blob/develop/web/src/assets/erro_node_10.jpg?raw=true)
 
 
 ## Maiores facilidades
