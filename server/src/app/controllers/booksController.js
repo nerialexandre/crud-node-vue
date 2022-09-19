@@ -8,38 +8,54 @@ module.exports = {
 
   async getAll (req, res)
   {
-    const { page = 1, limit = 100 } = req.query
-    const query = `MATCH (n:Books) RETURN n SKIP ${limit * (page - 1)} LIMIT ${limit}`
-    const resultObj = await graphDBConnect.executeCypherQuery(query)
-    const result = formatLib.formatBookResponse(resultObj)
+    try {
+      const { page = 1, limit = 100 } = req.query
+      const query = `MATCH (n:Books) RETURN n SKIP ${limit * (page - 1)} LIMIT ${limit}`
+      const resultObj = await graphDBConnect.executeCypherQuery(query)
+      const result = formatLib.formatBookResponse(resultObj)
 
-    const totalBooks = await graphDBConnect.executeCypherQuery(`MATCH (n:Books) RETURN COUNT(n)`)
-    const countTotalBooks = totalBooks.records[0]._fields[0]
+      const totalBooks = await graphDBConnect.executeCypherQuery(`MATCH (n:Books) RETURN COUNT(n)`)
+      const countTotalBooks = totalBooks.records[0]._fields[0]
 
-    res.send({
-      pagesTotal: Math.ceil(countTotalBooks / limit),
-      message: 'All Books',
-      result
-    })
+      res.send({
+        pagesTotal: Math.ceil(countTotalBooks / limit),
+        message: 'All Books',
+        result
+      })
+
+    } catch (error) {
+      return res.status(500).send({
+        message: 'Erro interno da aplicação. Tente em outro momento',
+      })
+    }
+
   },
 
   async getOne (req, res)
   {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { id } = req.params
+      const query = 'MATCH (n:Books {id: $id}) RETURN n LIMIT 1'
+      const params = { id }
+      const resultObj = await graphDBConnect.executeCypherQuery(query, params)
+      const result = formatLib.formatBookResponse(resultObj)
+
+      res.send({
+        message: 'Book found',
+        result: result[0]
+      })
+
+    } catch (error) {
+      return res.status(500).send({
+        message: 'Erro interno da aplicação. Tente em outro momento',
+      })
     }
 
-    const { id } = req.params
-    const query = 'MATCH (n:Books {id: $id}) RETURN n LIMIT 1'
-    const params = { id }
-    const resultObj = await graphDBConnect.executeCypherQuery(query, params)
-    const result = formatLib.formatBookResponse(resultObj)
-
-    res.send({
-      message: 'Book found',
-      result: result[0]
-    })
   },
 
   async create (req, res, next)
@@ -84,65 +100,84 @@ module.exports = {
       })
 
     } catch (error) {
-      next(error)
+      return res.status(500).send({
+        message: 'Erro interno da aplicação. Tente em outro momento',
+      })
     }
 
   },
 
   async update (req, res)
   {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
 
-    const {
-      title,
-      author,
-      pages = null,
-      releaseDate = null,
-      publishingCompany = null,
-    } = req.body
+    try {
 
-    const { id } = req.params
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: '${id}'}) RETURN n LIMIT 1`)
+      const {
+        title,
+        author,
+        pages = null,
+        releaseDate = null,
+        publishingCompany = null,
+      } = req.body
 
-    if (checkBookExists.records.length <= 0) {
-      return res.status(400).send({
-        message: 'Livro não encontrado',
+      const { id } = req.params
+
+      const checkBookExists = await graphDBConnect.executeCypherQuery(`MATCH (n:Books {id: '${id}'}) RETURN n LIMIT 1`)
+
+      if (checkBookExists.records.length <= 0) {
+        return res.status(400).send({
+          message: 'Livro não encontrado',
+        })
+      }
+
+      const checkBookExistsWithTitle = await checkBook.checkBookExistsWithTitle(title, id)
+      if (checkBookExistsWithTitle) {
+        return res.status(400).send({
+          message: 'Já existe um livro com esse titulo',
+        })
+      }
+
+      const query = `MATCH (b:Books {id: '${id}'}) SET b = {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany} RETURN b`;
+
+      const params = {
+        id,
+        title,
+        author,
+        pages,
+        releaseDate,
+        publishingCompany,
+      };
+
+      const resultObj = await graphDBConnect.executeCypherQuery(query, params);
+      const result = formatLib.formatBookResponse(resultObj);
+
+      res.send({
+        message: 'Book update successfully',
+        result: result[0]
+      })
+
+    } catch (error) {
+      return res.status(500).send({
+        message: 'Erro interno da aplicação. Tente em outro momento',
       })
     }
 
-    const checkBookExistsWithTitle = await checkBook.checkBookExistsWithTitle(title, id)
-    if (checkBookExistsWithTitle) {
-      return res.status(400).send({
-        message: 'Já existe um livro com esse titulo',
-      })
-    }
-
-    const query = `MATCH (b:Books {id: '${id}'}) SET b = {id:$id, title:$title, author: $author, pages: $pages, releaseDate: $releaseDate, publishingCompany: $publishingCompany} RETURN b`;
-
-    const params = {
-      id,
-      title,
-      author,
-      pages,
-      releaseDate,
-      publishingCompany,
-    };
-
-    const resultObj = await graphDBConnect.executeCypherQuery(query, params);
-    const result = formatLib.formatBookResponse(resultObj);
-
-    res.send({
-      message: 'Book update successfully',
-      result: result[0]
-    })
   },
 
   async delete (req, res)
   {
+    try {
+
+    } catch (error) {
+      return res.status(500).send({
+        message: 'Erro interno da aplicação. Tente em outro momento',
+      })
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

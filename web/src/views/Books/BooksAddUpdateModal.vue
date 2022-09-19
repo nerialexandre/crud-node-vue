@@ -1,5 +1,4 @@
 <template>
-
   <v-dialog
     v-model="dialog"
     persistent
@@ -35,8 +34,9 @@
                 md="6"
               >
                 <v-text-field
-                type="number"
+                  type="text"
                   label="Numero de páginas"
+                  v-mask="'#####'"
                   v-model="inputBook.pages"
                   :rules="rules.pageRules"
                 ></v-text-field>
@@ -122,7 +122,9 @@ export default {
       authorRules: [(v) => requiredField(v) || 'Nome do autor é obrigatório'],
       titleRules: [(v) => requiredField(v) || 'Título do livro é obrigatório'],
       pageRules: [
-        (v) => validatorPositiveZero(v) || 'Número de páginas deve ser maior que zero'
+        (v) =>
+          validatorPositiveZero(v) ||
+          'Número de páginas deve ser maior que zero'
       ]
     }
 
@@ -136,7 +138,6 @@ export default {
     })
 
     function submit (id = null) {
-      console.log(state.inputBook)
       state.formValidate = myForm.value.validate()
       if (state.formValidate) {
         if (props.typeForm === 'Cadastrar') {
