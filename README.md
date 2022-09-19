@@ -26,8 +26,15 @@ Por já está familiarizado com a liguagem e com o desenvolvimento de API restfu
 Ainda nao havia utilizado o vuitify, mas o mesmo se mostrou uma ferramenta de facil compreenção(muito clara a documentação)
 
 
-## Rodando o Projeto
-No repositorio criei duas pastas, server e Web (backend e frontend respectivamente), sendo necessario executar cada um de forma separada
+## Projeto
+De acordo com o desafio proposto foi desenvolvido um crud() para cadastro e atualizacao de um banco de livros.
+No repositorio criei duas pastas, server e Web (backend e frontend respectivamente), sendo necessario executar cada um de forma separada.
+
+Para clonar o projeto
+
+```
+git clone https://github.com/nerialexandre/crud-node-vue.git
+```
 
 ## Backend
 This software uses the following open source packages:

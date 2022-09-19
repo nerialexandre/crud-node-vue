@@ -9,6 +9,10 @@ const routes = [
     path: '/',
     name: 'home',
     component: BooksList
+  },
+  {
+    path: '*',
+    redirect: { name: 'home' }
   }
 ]
 
