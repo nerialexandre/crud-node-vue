@@ -1,11 +1,12 @@
 const { Router } = require('express')
 const { param, body } = require('express-validator')
-const initController = require('./app/controllers/initController')
+const booksController = require('./app/controllers/booksController')
+const customValidators = require('./app/lib/customValidator')
 
 const routes = new Router()
 
 routes.route('/books')
-  .get(initController.getAll)
+  .get(booksController.getAll)
   .post(
     [
       body('title')
@@ -19,7 +20,10 @@ routes.route('/books')
         .isString()
         .withMessage('Nome do autor deve ser string'),
       body('releaseDate')
-        .optional(),
+        .optional()
+        .custom(value => {
+          return customValidators.isDateOnly(value)
+        }),
       body('pages')
         .optional({ checkFalsy: true })
         .isInt({ min: 1 })
@@ -32,7 +36,7 @@ routes.route('/books')
         .withMessage('Nome da editora deve ser string'),
 
     ],
-    initController.create
+    booksController.create
   )
 
 routes.route('/books/:id')
@@ -41,7 +45,7 @@ routes.route('/books/:id')
       param('id')
         .exists()
     ],
-    initController.getOne
+    booksController.getOne
   )
   .put(
     [
@@ -71,14 +75,14 @@ routes.route('/books/:id')
         .withMessage('Nome da editora deve ser string'),
 
     ],
-    initController.update
+    booksController.update
   )
   .delete(
     [
       param('id')
         .exists()
     ],
-    initController.delete
+    booksController.delete
   )
 
 module.exports = routes
