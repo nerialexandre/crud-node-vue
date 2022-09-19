@@ -30,7 +30,7 @@ Ainda nao havia utilizado o vuitify, mas o mesmo se mostrou uma ferramenta de fa
 
 
 ## Projeto
-De acordo com o desafio proposto foi desenvolvido um crud() para cadastro e atualizacao de um banco de livros.
+De acordo com o desafio proposto foi desenvolvido um crud para cadastro e atualizacao de um banco de livros.
 No repositorio criei duas pastas, server e Web (backend e frontend respectivamente), sendo necessario executar cada um de forma separada.
 
 Para clonar o projeto
@@ -40,7 +40,7 @@ git clone https://github.com/nerialexandre/crud-node-vue.git
 ```
 
 ## Backend
-This software uses the following open source packages:
+Algumas ferramentas utilizadas
 
 - [Node.js](https://nodejs.org/)
 - [Express](https://expressjs.com/en/starter/installing.html)
@@ -78,7 +78,7 @@ npm run dev
 Com isso nossa API devera esta rodando na porta 5000 com sucesso!
 
 ## Frontend
-This software uses the following open source packages:
+Algumas ferramentas utilizadas
 
 - [axios](https://axios-http.com/ptbr/docs/intro)
 - [moment](https://momentjs.com/)
