@@ -51,13 +51,14 @@ Algumas ferramentas utilizadas
 
 ## Requisistos 
 - Node.js 12.x
+- Yarn
 - Banco Neo4j Rodando
 
 ## Setup
 
 ```
 cd server
-npm install
+yarn install
 ```
 ##### Configurar credenciais banco Neo4j
 acesse o arquivo [/src/config/config.js](https://github.com/nerialexandre/crud-node-vue/blob/develop/server/src/config/config.js) e informe as credencias do banco
@@ -73,9 +74,9 @@ Exemplo:
 ##### Executando
 
 ```
-npm run dev
+yarn dev
 ```
-Com isso nossa API devera esta rodando na porta 5000 com sucesso!
+Com isso nossa API devera esta rodando na porta 3000 com sucesso!
 
 ## Frontend
 Algumas ferramentas utilizadas
@@ -89,18 +90,19 @@ Algumas ferramentas utilizadas
 
 ## Requisistos 
 - Node.js 12.x
+- Yarn
 
 ## Setup
 
 ```
 cd web
-npm install
+yarn install
 ```
 ##### Necessario Executar o backend primeiramente
 
 ##### Executando
 
 ```
-npm run serve
+yarn serve
 ```
 Com isso nossa front deverá esta rodando na porta 8080 com sucesso!

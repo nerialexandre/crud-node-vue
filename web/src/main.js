@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
+import VueMask from 'v-mask'
 
 import VueSweetalert2 from 'vue-sweetalert2'
 
@@ -13,6 +14,7 @@ const options = {
   cancelButtonColor: 'red'
 }
 Vue.use(VueSweetalert2, options)
+Vue.use(VueMask)
 
 Vue.config.productionTip = false
 
