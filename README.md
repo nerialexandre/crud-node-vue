@@ -1,4 +1,4 @@
-![screenshot](https://raw.githubusercontent.com/nerialexandre/crud-node-vue/develop/web/src/assets/livros10.jpg)
+![screenshot](https://raw.githubusercontent.com/nerialexandre/crud-node-vue/develop/web/src/assets/app_print.jpg)
 
 ## Desafio NODE.js + VUE2
 
